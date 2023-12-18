@@ -41,6 +41,9 @@ gem "httparty"
 # Use dotenv to load environment variables from .env into ENV in development and test
 gem "dotenv-rails", groups: %i[ development test ]
 
+# Use rswag to generate Swagger documentation for API
+gem "rswag"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]

@@ -9,8 +9,6 @@ class CreateGames < ActiveRecord::Migration[7.1]
       t.string :genre
       t.string :publisher
       t.string :developer
-      t.datetime :created_at
-      t.datetime :updated_at
       t.string :cover_url
       t.text :summary
       t.text :storyline
