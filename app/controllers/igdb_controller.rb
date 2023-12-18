@@ -1,0 +1,2 @@
+class IgdbController < ApplicationController
+end

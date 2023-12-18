@@ -1,0 +1,61 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  game_name: MyString
+  igdb_id: 1
+  release_date: 2023-12-18
+  rating: 9.99
+  platform: MyString
+  genre: MyString
+  publisher: MyString
+  developer: MyString
+  created_at: 2023-12-18 11:27:51
+  updated_at: 2023-12-18 11:27:51
+  cover_url: MyString
+  summary: MyText
+  storyline: MyText
+  screenshots: 
+  videos: 
+  websites: 
+  multiplayer: false
+  player_perspectives: 
+  themes: 
+  modes: 
+  franchises: 
+  similar_games: 
+  total_rating: 9.99
+  total_rating_count: 1
+  popularity: 9.99
+  aggregated_rating: 9.99
+  aggregated_rating_count: 1
+  platforms: 
+
+two:
+  game_name: MyString
+  igdb_id: 1
+  release_date: 2023-12-18
+  rating: 9.99
+  platform: MyString
+  genre: MyString
+  publisher: MyString
+  developer: MyString
+  created_at: 2023-12-18 11:27:51
+  updated_at: 2023-12-18 11:27:51
+  cover_url: MyString
+  summary: MyText
+  storyline: MyText
+  screenshots: 
+  videos: 
+  websites: 
+  multiplayer: false
+  player_perspectives: 
+  themes: 
+  modes: 
+  franchises: 
+  similar_games: 
+  total_rating: 9.99
+  total_rating_count: 1
+  popularity: 9.99
+  aggregated_rating: 9.99
+  aggregated_rating_count: 1
+  platforms: 
