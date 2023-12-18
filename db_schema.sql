@@ -1,6 +1,6 @@
 CREATE TABLE games (
     game_id SERIAL PRIMARY KEY,
-    game_name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     igdb_id INT,
     release_date DATE,
     rating DECIMAL(3, 1),

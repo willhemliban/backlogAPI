@@ -1,19 +1,126 @@
 require 'httparty'
 class IgdbController < ApplicationController
     def authenticate
-        response = HTTParty.post('https://id.twitch.tv/oauth2/token', 
-            query: { 
-                client_id: ENV['IGDB_CLIENT_ID'], 
-                client_secret: ENV['IGDB_CLIENT_SECRET'], 
-                grant_type: 'client_credentials' 
-            }
-        )
+        if !session[:expires_at] || session[:expires_at] < Time.now
+            response = HTTParty.post('https://id.twitch.tv/oauth2/token', 
+                query: { 
+                    client_id: ENV['IGDB_CLIENT_ID'], 
+                    client_secret: ENV['IGDB_CLIENT_SECRET'], 
+                    grant_type: 'client_credentials' 
+                }
+            )
+            if response.success?
+                session[:access_token] = response['access_token']
+                session[:expires_in] = Time.now + response['expires_in'].to_i.seconds
+                # render json: { token: response['access_token'] }
+            else
+                return response
+            end
+        end
+        return session[:access_token]
+    end
+    
+    def add_games
+        token = authenticate
+        headers = {
+            'Client-ID': ENV['IGDB_CLIENT_ID'],
+            "Authorization": "Bearer #{token}"
+        }
+
+        body = 'search "Final Fantasy"; fields name;'
+        # body = 'search "Halo";fields name, rating, platforms, genres, first_release_date; sort id asc;'
+        response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
+        
 
         if response.success?
-            @access_token = response['access_token']
-            render json: response
+            games = JSON.parse(response.body)
+            games.each do |game|
+                # if Game.exists?(igdb_id: game['id'])
+                    # Game.create(
+                    #     name: game['name'],
+                    #     igdb_id: game['id'],
+                    #     release_date: game['release_dates'],
+                    #     rating: game['rating'],
+                    #     platform: game['platforms'],
+                    #     genre: game['genres'],
+                    #     publisher: game['publishers'],
+                    #     developer: game['developers'],
+                    #     cover_url: game['cover'],
+                    #     summary: game['summary'],
+                    #     storyline: game['storyline'],
+                    #     screenshots: game['screenshots'],
+                    #     videos: game['videos'],
+                    #     websites: game['websites'],
+                    #     multiplayer: game['multiplayer_modes'],
+                    #     player_perspectives: game['player_perspectives'],
+                    #     themes: game['themes'],
+                    #     modes: game['game_modes'],
+                    #     franchises: game['franchises'],
+                    #     similar_games: game['similar_games'],
+                    #     total_rating: game['total_rating'],
+                    #     total_rating_count: game['total_rating_count'],
+                    #     popularity: game['popularity'],
+                    #     aggregated_rating: game['aggregated_rating'],
+                    #     aggregated_rating_count: game['aggregated_rating_count'],
+                    #     platforms: game['platforms']
+                    # )
+                # else
+                #     existing_game = Game.find_by(igdb_id: game['id'])
+                #     existing_game.update(
+                #         name: game['name'],
+                #         igdb_id: game['id'],
+                #         release_date: game['release_dates'],
+                #         rating: game['rating'],
+                #         platform: game['platforms'],
+                #         genre: game['genres'],
+                #         publisher: game['publishers'],
+                #         developer: game['developers'],
+                #         cover_url: game['cover'],
+                #         summary: game['summary'],
+                #         storyline: game['storyline'],
+                #         screenshots: game['screenshots'],
+                #         videos: game['videos'],
+                #         websites: game['websites'],
+                #         multiplayer: game['multiplayer_modes'],
+                #         player_perspectives: game['player_perspectives'],
+                #         themes: game['themes'],
+                #         modes: game['game_modes'],
+                #         franchises: game['franchises'],
+                #         similar_games: game['similar_games'],
+                #         total_rating: game['total_rating'],
+                #         total_rating_count: game['total_rating_count'],
+                #         popularity: game['popularity'],
+                #         aggregated_rating: game['aggregated_rating'],
+                #         aggregated_rating_count: game['aggregated_rating_count'],
+                #         platforms: game['platforms']
+                #     )
+                # end
+            end
+            render json: games
         else
-            render json: { error: response }, status: :unauthorized
+            render json: response
+        end
+    end
+
+    def search_game
+        token = authenticate
+
+        search_term = params[:search_term]
+
+        headers = {
+            'Client-ID': ENV['IGDB_CLIENT_ID'],
+            "Authorization": "Bearer #{token}"
+        }
+
+        # search by name and limit to 500 results without dlc
+        body = "fields name; where name ~ *\"#{search_term}\"* & parent_game = null; limit 500; sort rating desc;"
+        response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
+
+        if response.success?
+            games = JSON.parse(response.body)
+            render json: games
+        else
+            raise "Error: #{response.code}"
         end
     end
 end

@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_18_120104) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_18_124821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "games", force: :cascade do |t|
-    t.string "game_name"
+    t.string "name"
     t.integer "igdb_id"
     t.date "release_date"
     t.decimal "rating"

@@ -11,6 +11,12 @@ Rails.application.routes.draw do
   # authentication igdb
   post "/igdb-authenticate" => "igdb#authenticate"
 
+  # add games from igdb to database
+  get "/igdb-add-games" => "igdb#add_games"
+
+  # search games from igdb
+  get 'igdb/search/:search_term', to: 'igdb#search_game'
+
   # Defines the root path route ("/")
   # root "posts#index"
 end
