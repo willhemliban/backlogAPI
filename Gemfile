@@ -49,6 +49,9 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
 end
 
+# Use rack-cors to allow cross-origin resource sharing
+gem "rack-cors"
+
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
