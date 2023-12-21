@@ -112,7 +112,7 @@ class IgdbController < ApplicationController
         }
 
         # search by name and limit to 500 results without dlc
-        body = "fields name, cover.image_id; where name ~ *\"#{search_term}\"* | alternative_names.name ~ *\"#{search_term}\"* & parent_game = null & cover.image_id != null; limit 500; sort rating desc;"
+        body = "fields name, cover.image_id, platforms.abbreviation; where name ~ *\"#{search_term}\"* | alternative_names.name ~ *\"#{search_term}\"* & parent_game = null & cover.image_id != null; limit 500; sort rating desc;"
         response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
 
         if response.success?
