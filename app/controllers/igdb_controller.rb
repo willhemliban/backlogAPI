@@ -134,7 +134,15 @@ class IgdbController < ApplicationController
             'Authorization': "Bearer #{token}"
         }
 
-        body = "fields name, cover.image_id, platforms.name, genres.name, first_release_date, rating, summary, storyline, screenshots.image_id, videos.url, player_perspectives.name, themes.name, game_modes.name, franchises.name, similar_games, total_rating, total_rating_count, popularity, aggregated_rating, aggregated_rating_count, platforms.name; where id = #{igdb_id};"
+        body = "fields name, cover.image_id, platforms.name, genres.name, first_release_date, rating, summary, storyline, screenshots.image_id, player_perspectives.name, themes.name, game_modes.name, franchises.name, franchise.games, similar_games, aggregated_rating, platforms.name; where id = #{igdb_id};"
+        response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
+
+        if response.success?
+            game = JSON.parse(response.body)
+            render json: game
+        else
+            render json: response.body
+        end
         
     end
 

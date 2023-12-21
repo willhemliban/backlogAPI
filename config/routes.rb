@@ -17,6 +17,9 @@ Rails.application.routes.draw do
   # search games from igdb
   get 'igdb/search/:search_term', to: 'igdb#search_game'
 
+  # get one game from igdb
+  get 'igdb/game/:igdb_id', to: 'igdb#get_game'
+
   # Defines the root path route ("/")
   # root "posts#index"
 end
