@@ -27,8 +27,7 @@ class IgdbController < ApplicationController
             "Authorization": "Bearer #{token}"
         }
 
-        body = 'search "Final Fantasy"; fields name;'
-        # body = 'search "Halo";fields name, rating, platforms, genres, first_release_date; sort id asc;'
+        body = 'fields name; where name ~ *"Grand Theft Auto"*; limit 500;'
         response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
         
 
@@ -109,19 +108,34 @@ class IgdbController < ApplicationController
 
         headers = {
             'Client-ID': ENV['IGDB_CLIENT_ID'],
-            "Authorization": "Bearer #{token}"
+            'Authorization': "Bearer #{token}"
         }
 
         # search by name and limit to 500 results without dlc
-        body = "fields name, cover.image_id; where name ~ *\"#{search_term}\"* & parent_game = null; limit 500; sort rating desc;"
+        body = "fields name, cover.image_id; where name ~ *\"#{search_term}\"* & parent_game = null & cover.image_id != null; limit 500; sort rating desc;"
         response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
 
         if response.success?
             games = JSON.parse(response.body)
             render json: games
         else
-            raise "Error: #{response.code}"
+            render json: response.body
         end
+    end
+    
+    # get game by igdb_id
+    def get_game
+        token = authenticate
+
+        igdb_id = params[:igdb_id]
+
+        headers = {
+            'Client-ID': ENV['IGDB_CLIENT_ID'],
+            'Authorization': "Bearer #{token}"
+        }
+
+        body = "fields name, cover.image_id, platforms.name, genres.name, first_release_date, rating, summary, storyline, screenshots.image_id, videos.url, player_perspectives.name, themes.name, game_modes.name, franchises.name, similar_games, total_rating, total_rating_count, popularity, aggregated_rating, aggregated_rating_count, platforms.name; where id = #{igdb_id};"
+        
     end
 
 end
