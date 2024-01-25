@@ -1,4 +1,6 @@
 require 'httparty'
+require 'date'
+
 class IgdbController < ApplicationController
     def authenticate
         if !session[:expires_at] || session[:expires_at] < Time.now
@@ -112,7 +114,7 @@ class IgdbController < ApplicationController
         }
 
         # search by name and limit to 500 results without dlc
-        body = "fields name, cover.image_id, platforms.abbreviation; where name ~ *\"#{search_term}\"* | alternative_names.name ~ *\"#{search_term}\"* & parent_game = null; limit 500; sort rating desc;"
+        body = "fields name, cover.image_id, platforms.abbreviation, slug; where name ~ *\"#{search_term}\"* | alternative_names.name ~ *\"#{search_term}\"* & parent_game = null; limit 500; sort rating desc;"
         response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
 
         if response.success?
@@ -134,16 +136,18 @@ class IgdbController < ApplicationController
             'Authorization': "Bearer #{token}"
         }
 
-        body = "fields name, cover.image_id, platforms.name, genres.name, first_release_date, rating, summary, storyline, screenshots.image_id, player_perspectives.name, themes.name, game_modes.name, franchises.name, franchise.games, similar_games, aggregated_rating, platforms.name; where id = #{igdb_id};"
+        body = "fields name, cover.image_id, platforms.name, genres.name, first_release_date, rating, summary, storyline, screenshots.image_id, player_perspectives.name, themes.name, game_modes.name, franchises.name, franchise.games, similar_games, aggregated_rating, platforms.name, slug, involved_companies.company.name, involved_companies.developer, involved_companies.publisher; where id = #{igdb_id};"
         response = HTTParty.post('https://api.igdb.com/v4/games', headers: headers, body: body)
 
         if response.success?
-            game = JSON.parse(response.body)
+            game = JSON.parse(response.body)[0]
+            if game['first_release_date']
+                game['first_release_date'] = Time.at(game['first_release_date']).to_datetime.strftime("%d %B %Y")
+            end
             render json: game
         else
             render json: response.body
         end
-        
     end
 
 end
